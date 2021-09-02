@@ -14,7 +14,7 @@ const useUpdateEffect = (effect, dependencies = []) => {
   }, dependencies);
 };
 
-const maxSeconds = 30000;
+const maxSeconds = 60000;
 const showSeconds = {
   min: 1000,
   max: 3000
@@ -182,7 +182,7 @@ function Game() {
 
   return (
     <div className="component component--game">
-      <h2>whack a mole</h2>
+      <h2>whack a mole~~!!</h2>
       <div className="game__container">
         <div className="container__header">
           <Timer
@@ -207,7 +207,16 @@ function Game() {
         </div>
 
         <div className="container__footer">
-          <button onClick={startGame}>시작</button>
+          <button
+            className={`btn btn--${isPlaying ? "off" : "on"}`}
+            onClick={() => {
+              if (!isPlaying) startGame();
+            }}
+          >
+            {isPlaying
+              ? "you can not stop this until time's gone..😈😈"
+              : "start"}
+          </button>
         </div>
       </div>
     </div>
@@ -217,15 +226,15 @@ const Mole = ({ isActive, idx, onClickMole }) => {
   return (
     <>
       {breakLines.indexOf(idx) > -1 && <hr />}
-      <div
-        className="mole-home"
-        onClick={() => {
-          if (isActive) onClickMole(idx);
-        }}
-      >
-        <div className={`mole mole__${isActive ? "on" : "off"}`}>
-          <span>{idx},</span>
-          <span>{isActive ? "show" : "hide"}</span>
+      <div className="mole-home">
+        <div
+          className={`mole mole__${isActive ? "on" : "off"}`}
+          onClick={() => {
+            if (isActive) onClickMole(idx);
+          }}
+        >
+          {/* <span>{idx},</span> */}
+          {/* <span>{isActive ? "show" : "hide"}</span> */}
         </div>
       </div>
     </>
@@ -272,13 +281,19 @@ const Timer = ({ maxSeconds, isPlaying, setStorage, getStorage, endGame }) => {
 
   return (
     <span className="item item--timer">
-      Timer : {(maxSeconds - seconds) / 1000} seconds
+      Timer :
+      <span className="item__strong"> {(maxSeconds - seconds) / 1000}</span>
+      seconds
     </span>
   );
 };
 
 const Score = ({ score }) => {
-  return <span className="item item--score"> Score : {score}</span>;
+  return (
+    <span className="item item--score">
+      Score : <span className="item__strong">{score}</span>
+    </span>
+  );
 };
 
 export default Game;

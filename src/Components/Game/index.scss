@@ -1,41 +1,81 @@
 .component--game {
-  border: 1px solid red;
 }
 /* header */
 .container__header {
 }
 .item {
-  padding: 5px;
-  background-color: aquamarine;
+  padding: 7px;
+  background-color: #2e7d32;
   width: 200px;
   display: inline-block;
+  color: white;
+  border-radius: 3px;
 }
 .item--timer {
   margin-right: 15px;
 }
-
+.item__strong {
+  color: yellow;
+  font-weight: bold;
+  margin-left: 3px;
+  margin-right: 3px;
+  display: inline-block;
+}
 /* body */
 .container__body {
-  margin-top: 20px;
-  margin-bottom: 20px;
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
 .mole-home {
   display: inline-block;
   padding: 5px;
-  margin: 10px;
-  background-color: rgb(216, 216, 216);
-  cursor: pointer;
-  width: 50px;
-  height: 50px;
+  margin: 5px;
+  background-image: url("../../Images/frame.jpg");
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  width: 65px;
+  height: 65px;
 }
 .mole {
-  width: 100%;
-  height: 100%;
+  width: 80%;
+  height: 80%;
+  margin: 5px;
 }
 .mole__on {
-  background-color: violet;
+  background-image: url("../../Images/mole.png");
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  cursor: pointer;
+  animation: fadein 1s;
+}
+@keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 hr {
   visibility: hidden;
+}
+
+/* footer */
+.btn {
+  cursor: pointer;
+  border: none;
+  padding: 7px;
+  background-color: #a5d6a7;
+  width: 300px;
+  height: 40px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  border-radius: 3px;
+}
+.btn--off {
+  border: none;
+  cursor: default;
+  background-color: #f44336;
+  color: white;
 }
