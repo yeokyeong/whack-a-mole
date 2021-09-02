@@ -5,14 +5,14 @@ const showSeconds = {
 };
 const hideSeconds = 500;
 const maxMoleCnt = 5;
-const MoleCnt = 24;
-const initialMoles = Array(MoleCnt).fill(false);
+const moleCnt = 24;
+const initialMoles = Array(moleCnt).fill(false);
 
 export {
   maxSeconds,
   showSeconds,
   hideSeconds,
   maxMoleCnt,
-  MoleCnt,
+  moleCnt,
   initialMoles
 };

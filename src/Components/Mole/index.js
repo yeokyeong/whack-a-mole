@@ -1,12 +1,12 @@
 import React from "react";
 import "./index.scss";
-import { MoleCnt } from "../../Utils/constants";
+import { moleCnt } from "../../Utils/constants";
 
-const breakLines = getBreakLines(MoleCnt);
-function getBreakLines(MoleCnt) {
+const breakLines = getBreakLines(moleCnt);
+function getBreakLines(moleCnt) {
   let k = 2;
   let i = 1;
-  let pivot = MoleCnt / 2;
+  let pivot = moleCnt / 2;
   let beforeVal = 0;
   let result = [];
 
