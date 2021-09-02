@@ -1,5 +1,17 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./index.scss";
+
+const useUpdateEffect = (effect, dependencies = []) => {
+  const isInitialMount = useRef(true);
+
+  useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+    } else {
+      effect();
+    }
+  }, dependencies);
+};
 
 function Game(props) {
   const initialMoles = Array(24).fill(false);
@@ -11,18 +23,36 @@ function Game(props) {
   const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
+    let gameData = getStorage();
+    if (!gameData.hasOwnProperty("moles")) {
+      setStorage("moles", moles);
+    } else {
+      setMoles(gameData["moles"]);
+    }
+    if (!gameData.hasOwnProperty("isPlaying")) {
+      setStorage("isPlaying", isPlaying);
+    } else {
+      setIsPlaying(gameData["isPlaying"]);
+    }
+  }, []);
+
+  useUpdateEffect(() => {
+    console.log(111, "I run only if toggle changes.", isPlaying);
     if (isPlaying) {
       startMoving();
     } else {
       setMoles(initialMoles);
     }
+    setStorage("isPlaying", isPlaying);
   }, [isPlaying]);
 
   /* start & end */
   const startGame = () => {
+    console.log(111, "startGame");
     setIsPlaying(true);
   };
   const endGame = () => {
+    console.log(111, "endGame");
     setIsPlaying(false);
   };
 
@@ -52,16 +82,20 @@ function Game(props) {
   };
 
   const setStorage = (key, value) => {
-    localStorage.setItem(key, value);
+    let gameData = getStorage();
+    gameData[key] = value;
+    localStorage.setItem("gameData", JSON.stringify(gameData));
   };
-  const getStorage = (key) => {
-    let data = undefined;
+  const getStorage = () => {
+    let gameData = {};
     try {
-      data = JSON.parse(localStorage.getItem(key));
+      gameData = localStorage.getItem("gameData")
+        ? JSON.parse(localStorage.getItem("gameData"))
+        : {};
     } catch (error) {
-      data = null;
+      gameData = {};
     }
-    return data;
+    return gameData;
   };
   return (
     <div className="component component--game">
@@ -73,6 +107,7 @@ function Game(props) {
             isPlaying={isPlaying}
             setStorage={setStorage}
             getStorage={getStorage}
+            endGame={endGame}
           />
           <Score />
         </div>
@@ -100,20 +135,21 @@ const Mole = ({ isActive, idx }) => {
     </div>
   );
 };
-const Timer = ({ maxSeconds, isPlaying, setStorage, getStorage }) => {
+const Timer = ({ maxSeconds, isPlaying, setStorage, getStorage, endGame }) => {
   const [seconds, setSeconds] = useState(0);
   const interval = 1000;
 
   useEffect(() => {
-    setSeconds(getStorage("seconds"));
-    console.log(111, "when timer mount", getStorage("seconds"));
+    let gameData = getStorage();
+    if (!gameData.hasOwnProperty("seconds")) {
+      setStorage("seconds", seconds);
+    } else {
+      setSeconds(gameData["seconds"]);
+    }
   }, []);
 
   useEffect(() => {
-    if (isPlaying) {
-      setTimer();
-    } else {
-    }
+    if (isPlaying) setTimer();
   }, [isPlaying]);
 
   useEffect(() => {
@@ -122,7 +158,15 @@ const Timer = ({ maxSeconds, isPlaying, setStorage, getStorage }) => {
     }
   }, [seconds]);
 
-  const setTimer = () => {};
+  const setTimer = () => {
+    let timerId = setInterval(() => {
+      setSeconds((prev) => prev + 1000);
+    }, interval);
+    setTimeout(() => {
+      clearInterval(timerId);
+      endGame();
+    }, 3000);
+  };
   return (
     <span className="item item--timer">
       Timer : {(maxSeconds - seconds) / 1000} seconds
