@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import "./index.scss";
 
 const useUpdateEffect = (effect, dependencies = []) => {
+  //FIXME
   const isInitialMount = useRef(true);
 
   useEffect(() => {
@@ -13,18 +14,19 @@ const useUpdateEffect = (effect, dependencies = []) => {
   }, dependencies);
 };
 
-function Game(props) {
-  const initialMoles = Array(24).fill(false);
-  const maxSeconds = 10000;
-  const minInterval = 1000;
-  const maxInterval = 3000;
+const maxSeconds = 30000;
+const minInterval = 1000;
+const maxInterval = 3000;
+const initialMoles = Array(24).fill(false);
 
+function Game() {
   const [moles, setMoles] = useState(initialMoles);
   const [isPlaying, setIsPlaying] = useState(false);
   const [score, setScore] = useState(0);
 
   useEffect(() => {
     let gameData = getStorage();
+    //FIXME : Logic Repeated
     if (!gameData.hasOwnProperty("moles")) {
       setStorage("moles", moles);
     } else {
@@ -47,6 +49,7 @@ function Game(props) {
       startMoving();
     } else {
       setMoles(initialMoles);
+      //FIXME : possibility of error
       setScore(0);
       setStorage("score", 0);
     }
@@ -60,6 +63,7 @@ function Game(props) {
   /* click event */
   const onClickMole = (idx) => {
     setScore((prev) => prev + 1);
+    setMoles((prev) => changeMoleState(prev, idx, false));
   };
 
   /* start & end */
@@ -76,17 +80,33 @@ function Game(props) {
   const startMoving = () => {
     console.log(111, "startMoving");
     let randomSeconds = getRandomFromInterval(minInterval, maxInterval);
-    showMole(randomSeconds);
-  };
+    let timerId = setInterval(() => {
+      showMole(randomSeconds);
+    }, randomSeconds);
 
+    let gameData = getStorage();
+    setTimeout(() => {
+      clearInterval(timerId);
+    }, maxSeconds - gameData["seconds"]);
+  };
   const showMole = (seconds) => {
     console.log(111, "showMole");
-
     let randomIdx = getRandomIdx();
+    setMoles((prev) => changeMoleState(prev, randomIdx, true));
     hideMole(randomIdx, seconds);
   };
   const hideMole = (idx, seconds) => {
-    console.log(111, "hideMole");
+    setTimeout(() => {
+      setMoles((prev) => changeMoleState(prev, idx, false));
+      console.log(111, "hideMole");
+    }, seconds + 500);
+  };
+
+  /* callback */
+  const changeMoleState = (prev, idx, state) => {
+    let newMoles = [...prev];
+    newMoles[idx] = state;
+    return newMoles;
   };
 
   /* utils */
@@ -113,6 +133,7 @@ function Game(props) {
     }
     return gameData;
   };
+
   return (
     <div className="component component--game">
       <h2>whack a mole</h2>
@@ -142,20 +163,26 @@ function Game(props) {
   );
 }
 const Mole = ({ isActive, idx, onClickMole }) => {
+  let lineBreakArr = Array.from([2, 6, 12, 18, 22], (x) => x - 1);
+
   return (
-    <div
-      className="mole-home"
-      onClick={() => {
-        if (isActive) onClickMole(idx);
-      }}
-    >
-      <div className="mole">
-        <span>{idx},</span>
-        <span>{isActive ? "show" : "hide"}</span>
+    <>
+      <div
+        className="mole-home"
+        onClick={() => {
+          if (isActive) onClickMole(idx);
+        }}
+      >
+        <div className={`mole mole__${isActive ? "on" : "off"}`}>
+          <span>{idx},</span>
+          <span>{isActive ? "show" : "hide"}</span>
+        </div>
       </div>
-    </div>
+      {lineBreakArr.indexOf(idx) > -1 && <hr />}
+    </>
   );
 };
+
 const Timer = ({ maxSeconds, isPlaying, setStorage, getStorage, endGame }) => {
   const [seconds, setSeconds] = useState(0);
   const interval = 1000;
