@@ -1,52 +1,23 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import "./index.scss";
+import Timer from "../Timer";
+import Score from "../Score";
+import Mole from "../Mole";
+import {
+  useUpdateEffect,
+  getRandomFromInterval,
+  getRandomIdx,
+  setStorage,
+  getStorage
+} from "../../Utils/functions";
+import {
+  initialMoles,
+  maxMoleCnt,
+  showSeconds,
+  maxSeconds,
+  hideSeconds
+} from "../../Utils/constants";
 
-const useUpdateEffect = (effect, dependencies = []) => {
-  //FIXME
-  const isInitialMount = useRef(true);
-
-  useEffect(() => {
-    if (isInitialMount.current) {
-      isInitialMount.current = false;
-    } else {
-      effect();
-    }
-  }, dependencies);
-};
-
-const maxSeconds = 60000;
-const showSeconds = {
-  min: 1000,
-  max: 3000
-};
-const hideSeconds = 500;
-const maxMoleCnt = 5;
-const MoleCnt = 24;
-const initialMoles = Array(MoleCnt).fill(false);
-const breakLines = getBreakLines(MoleCnt);
-
-function getBreakLines(MoleCnt) {
-  let k = 2;
-  let i = 1;
-  let pivot = MoleCnt / 2;
-  let beforeVal = 0;
-  let result = [];
-
-  while (beforeVal < pivot) {
-    beforeVal += k * i;
-    result.push(beforeVal);
-    i++;
-  }
-  while (beforeVal >= pivot) {
-    i--;
-    beforeVal += k * i;
-    if (beforeVal >= 24) {
-      break;
-    }
-    result.push(beforeVal);
-  }
-  return result;
-}
 function Game() {
   const [moles, setMoles] = useState(initialMoles);
   const [activeMoles, setActiveMoles] = useState([]);
@@ -54,20 +25,20 @@ function Game() {
   const [score, setScore] = useState(0);
 
   useEffect(() => {
-    let gameData = getStorage();
+    let gameData = getStorage("gameData");
     //FIXME : Logic Repeated
     if (!gameData.hasOwnProperty("moles")) {
-      setStorage("moles", moles);
+      setStorage("gameData", { moles: moles });
     } else {
       setMoles(gameData["moles"]);
     }
     if (!gameData.hasOwnProperty("isPlaying")) {
-      setStorage("isPlaying", isPlaying);
+      setStorage("gameData", { isPlaying: isPlaying });
     } else {
       setIsPlaying(gameData["isPlaying"]);
     }
     if (!gameData.hasOwnProperty("score")) {
-      setStorage("score", score);
+      setStorage("gameData", { score: score });
     } else {
       setScore(gameData["score"]);
     }
@@ -80,13 +51,13 @@ function Game() {
       setMoles(initialMoles);
       //FIXME : possibility of error
       setScore(0);
-      setStorage("score", 0);
+      setStorage("gameData", { score: 0 });
     }
-    setStorage("isPlaying", isPlaying);
+    setStorage("gameData", { isPlaying: isPlaying });
   }, [isPlaying]);
 
   useUpdateEffect(() => {
-    setStorage("score", score);
+    setStorage("gameData", { score: score });
   }, [score]);
 
   useUpdateEffect(() => {
@@ -120,8 +91,7 @@ function Game() {
     let timerId = setInterval(() => {
       showMole(randomSeconds);
     }, randomSeconds);
-
-    let gameData = getStorage();
+    let gameData = getStorage("gameData");
     setTimeout(() => {
       clearInterval(timerId);
     }, maxSeconds - gameData["seconds"]);
@@ -129,7 +99,7 @@ function Game() {
   const showMole = (seconds) => {
     let randomIdx;
     do {
-      randomIdx = getRandomIdx();
+      randomIdx = getRandomIdx(moles.length);
     } while (activeMoles.indexOf(randomIdx) > -1);
 
     setMoles((prev) => changeMoleState(prev, randomIdx, true));
@@ -155,31 +125,6 @@ function Game() {
     return newMoles;
   };
 
-  /* utils */
-  const getRandomFromInterval = (min, max) => {
-    return Math.floor(Math.random() * (max - min + 1) + min);
-  };
-  const getRandomIdx = () => {
-    return Math.floor(Math.random() * moles.length);
-  };
-
-  const setStorage = (key, value) => {
-    let gameData = getStorage();
-    gameData[key] = value;
-    localStorage.setItem("gameData", JSON.stringify(gameData));
-  };
-  const getStorage = () => {
-    let gameData = {};
-    try {
-      gameData = localStorage.getItem("gameData")
-        ? JSON.parse(localStorage.getItem("gameData"))
-        : {};
-    } catch (error) {
-      gameData = {};
-    }
-    return gameData;
-  };
-
   return (
     <div className="component component--game">
       <h2>whack a mole~~!!</h2>
@@ -188,8 +133,6 @@ function Game() {
           <Timer
             maxSeconds={maxSeconds}
             isPlaying={isPlaying}
-            setStorage={setStorage}
-            getStorage={getStorage}
             endGame={endGame}
           />
           <Score score={score} />
@@ -222,75 +165,4 @@ function Game() {
     </div>
   );
 }
-const Mole = ({ isActive, idx, onClickMole }) => {
-  return (
-    <>
-      {breakLines.indexOf(idx) > -1 && <hr />}
-      <div className="mole-home">
-        <div
-          className={`mole mole__${isActive ? "on" : "off"}`}
-          onClick={() => {
-            if (isActive) onClickMole(idx);
-          }}
-        ></div>
-      </div>
-    </>
-  );
-};
-
-const Timer = ({ maxSeconds, isPlaying, setStorage, getStorage, endGame }) => {
-  const [seconds, setSeconds] = useState(0);
-  const interval = 1000;
-
-  useEffect(() => {
-    let gameData = getStorage();
-    if (!gameData.hasOwnProperty("seconds")) {
-      setStorage("seconds", seconds);
-    } else {
-      setSeconds(gameData["seconds"]);
-    }
-  }, []);
-
-  useUpdateEffect(() => {
-    if (isPlaying) {
-      setTimer();
-    } else {
-      setSeconds(0);
-      setStorage("seconds", 0);
-    }
-  }, [isPlaying]);
-
-  useEffect(() => {
-    if (seconds > 0) {
-      setStorage("seconds", seconds);
-    }
-  }, [seconds]);
-
-  const setTimer = () => {
-    let timerId = setInterval(() => {
-      setSeconds((prev) => prev + 1000);
-    }, interval);
-    setTimeout(() => {
-      clearInterval(timerId);
-      endGame();
-    }, maxSeconds - seconds);
-  };
-
-  return (
-    <span className="item item--timer">
-      Timer :
-      <span className="item__strong"> {(maxSeconds - seconds) / 1000}</span>
-      seconds
-    </span>
-  );
-};
-
-const Score = ({ score }) => {
-  return (
-    <span className="item item--score">
-      Score : <span className="item__strong">{score}</span>
-    </span>
-  );
-};
-
 export default Game;
