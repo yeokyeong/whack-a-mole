@@ -20,9 +20,33 @@ const showSeconds = {
   max: 3000
 };
 const hideSeconds = 500;
-const maxMoles = 5;
-const initialMoles = Array(24).fill(false);
+const maxMoleCnt = 5;
+const MoleCnt = 24;
+const initialMoles = Array(MoleCnt).fill(false);
+const breakLines = getBreakLines(MoleCnt);
 
+function getBreakLines(MoleCnt) {
+  let k = 2;
+  let i = 1;
+  let pivot = MoleCnt / 2;
+  let beforeVal = 0;
+  let result = [];
+
+  while (beforeVal < pivot) {
+    beforeVal += k * i;
+    result.push(beforeVal);
+    i++;
+  }
+  while (beforeVal >= pivot) {
+    i--;
+    beforeVal += k * i;
+    if (beforeVal >= 24) {
+      break;
+    }
+    result.push(beforeVal);
+  }
+  return result;
+}
 function Game() {
   const [moles, setMoles] = useState(initialMoles);
   const [activeMoles, setActiveMoles] = useState([]);
@@ -67,7 +91,7 @@ function Game() {
 
   useUpdateEffect(() => {
     if (isPlaying) {
-      if (activeMoles.length > maxMoles) {
+      if (activeMoles.length > maxMoleCnt) {
         hideMole(activeMoles[0], 0);
       }
     }
@@ -190,10 +214,9 @@ function Game() {
   );
 }
 const Mole = ({ isActive, idx, onClickMole }) => {
-  let lineBreakArr = Array.from([2, 6, 12, 18, 22], (x) => x - 1);
-
   return (
     <>
+      {breakLines.indexOf(idx) > -1 && <hr />}
       <div
         className="mole-home"
         onClick={() => {
@@ -205,7 +228,6 @@ const Mole = ({ isActive, idx, onClickMole }) => {
           <span>{isActive ? "show" : "hide"}</span>
         </div>
       </div>
-      {lineBreakArr.indexOf(idx) > -1 && <hr />}
     </>
   );
 };
@@ -258,4 +280,5 @@ const Timer = ({ maxSeconds, isPlaying, setStorage, getStorage, endGame }) => {
 const Score = ({ score }) => {
   return <span className="item item--score"> Score : {score}</span>;
 };
+
 export default Game;
