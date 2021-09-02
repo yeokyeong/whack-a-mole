@@ -15,12 +15,17 @@ const useUpdateEffect = (effect, dependencies = []) => {
 };
 
 const maxSeconds = 30000;
-const minInterval = 1000;
-const maxInterval = 3000;
+const showSeconds = {
+  min: 1000,
+  max: 3000
+};
+const hideSeconds = 500;
+const maxMoles = 5;
 const initialMoles = Array(24).fill(false);
 
 function Game() {
   const [moles, setMoles] = useState(initialMoles);
+  const [activeMoles, setActiveMoles] = useState([]);
   const [isPlaying, setIsPlaying] = useState(false);
   const [score, setScore] = useState(0);
 
@@ -60,6 +65,14 @@ function Game() {
     setStorage("score", score);
   }, [score]);
 
+  useUpdateEffect(() => {
+    if (isPlaying) {
+      if (activeMoles.length > maxMoles) {
+        hideMole(activeMoles[0], 0);
+      }
+    }
+  }, [activeMoles]);
+
   /* click event */
   const onClickMole = (idx) => {
     setScore((prev) => prev + 1);
@@ -79,7 +92,7 @@ function Game() {
   /* mole moving  */
   const startMoving = () => {
     console.log(111, "startMoving");
-    let randomSeconds = getRandomFromInterval(minInterval, maxInterval);
+    let randomSeconds = getRandomFromInterval(showSeconds.min, showSeconds.max);
     let timerId = setInterval(() => {
       showMole(randomSeconds);
     }, randomSeconds);
@@ -90,16 +103,25 @@ function Game() {
     }, maxSeconds - gameData["seconds"]);
   };
   const showMole = (seconds) => {
-    console.log(111, "showMole");
-    let randomIdx = getRandomIdx();
+    let randomIdx;
+    do {
+      randomIdx = getRandomIdx();
+    } while (activeMoles.indexOf(randomIdx) > -1);
+
     setMoles((prev) => changeMoleState(prev, randomIdx, true));
-    hideMole(randomIdx, seconds);
+    setActiveMoles((prev) => {
+      return [...prev, randomIdx];
+    });
+    hideMole(randomIdx, seconds + hideSeconds);
   };
   const hideMole = (idx, seconds) => {
     setTimeout(() => {
       setMoles((prev) => changeMoleState(prev, idx, false));
+      setActiveMoles((prev) => {
+        return prev.filter((v) => v !== idx);
+      });
       console.log(111, "hideMole");
-    }, seconds + 500);
+    }, seconds);
   };
 
   /* callback */
@@ -151,7 +173,12 @@ function Game() {
 
         <div className="container__body">
           {moles.map((isActive, idx) => (
-            <Mole isActive={isActive} idx={idx} onClickMole={onClickMole} />
+            <Mole
+              isActive={isActive}
+              idx={idx}
+              onClickMole={onClickMole}
+              key={idx}
+            />
           ))}
         </div>
 
