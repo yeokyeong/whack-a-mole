@@ -3,8 +3,20 @@ import "./index.scss";
 
 function Game(props) {
   const initialMoles = Array(24).fill(false);
+  const maxSeconds = 10000;
+  const minInterval = 1000;
+  const maxInterval = 3000;
+
   const [moles, setMoles] = useState(initialMoles);
   const [isPlaying, setIsPlaying] = useState(false);
+
+  useEffect(() => {
+    if (isPlaying) {
+      startMoving();
+    } else {
+      setMoles(initialMoles);
+    }
+  }, [isPlaying]);
 
   /* start & end */
   const startGame = () => {
@@ -14,6 +26,31 @@ function Game(props) {
     setIsPlaying(false);
   };
 
+  /* mole moving  */
+  const startMoving = () => {
+    console.log(111, "startMoving");
+
+    let randomSeconds = getRandomFromInterval(minInterval, maxInterval);
+    showMole(randomSeconds);
+  };
+
+  const showMole = (seconds) => {
+    console.log(111, "showMole");
+
+    let randomIdx = getRandomIdx();
+    hideMole(randomIdx, seconds);
+  };
+  const hideMole = (idx, seconds) => {
+    console.log(111, "hideMole");
+  };
+
+  /* utils */
+  const getRandomFromInterval = (min, max) => {
+    return Math.floor(Math.random() * (max - min + 1) + min);
+  };
+  const getRandomIdx = () => {
+    return Math.floor(Math.random() * moles.length);
+  };
   return (
     <div className="component component--game">
       <h2>whack a mole</h2>
