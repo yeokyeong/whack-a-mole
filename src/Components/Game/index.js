@@ -4,6 +4,15 @@ import "./index.scss";
 function Game(props) {
   const initialMoles = Array(24).fill(false);
   const [moles, setMoles] = useState(initialMoles);
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  /* start & end */
+  const startGame = () => {
+    setIsPlaying(true);
+  };
+  const endGame = () => {
+    setIsPlaying(false);
+  };
 
   return (
     <div className="component component--game">
@@ -20,7 +29,9 @@ function Game(props) {
           ))}
         </div>
 
-        <div className="container__footer"></div>
+        <div className="container__footer">
+          <button onClick={startGame}>시작</button>
+        </div>
       </div>
     </div>
   );
@@ -36,10 +47,12 @@ const Mole = ({ isActive, idx }) => {
   );
 };
 const Timer = () => {
-  return <span className="item item--timer"> Timer : Timer</span>;
+  const [seconds, setSeconds] = useState(0);
+  return <span className="item item--timer"> Timer : {seconds}</span>;
 };
 
 const Score = () => {
-  return <span className="item item--score"> Score : score</span>;
+  const [score, setScore] = useState(0);
+  return <span className="item item--score"> Score : {score}</span>;
 };
 export default Game;
