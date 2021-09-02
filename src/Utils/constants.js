@@ -1,18 +1,18 @@
-const maxSeconds = 60000;
-const showSeconds = {
-  min: 1000,
-  max: 3000
+const SECOND_LIMIT = 60000;
+const SECOND_TO_SHOW_INTERVAL = {
+  MIN: 1000,
+  MAX: 3000
 };
-const hideSeconds = 500;
-const maxMoleCnt = 5;
-const moleCnt = 24;
-const initialMoles = Array(moleCnt).fill(false);
+const SECOND_TO_HIDE = 500;
+const MAX_MOLE_CNT = 5;
+const TOTAL_MOLE_CNT = 24;
+const INITIAL_MOLES = Array(TOTAL_MOLE_CNT).fill(false);
 
 export {
-  maxSeconds,
-  showSeconds,
-  hideSeconds,
-  maxMoleCnt,
-  moleCnt,
-  initialMoles
+  SECOND_LIMIT,
+  SECOND_TO_SHOW_INTERVAL,
+  SECOND_TO_HIDE,
+  MAX_MOLE_CNT,
+  TOTAL_MOLE_CNT,
+  INITIAL_MOLES
 };

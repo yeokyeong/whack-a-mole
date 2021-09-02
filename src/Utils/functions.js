@@ -13,6 +13,7 @@ const useUpdateEffect = (effect, dependencies = []) => {
   }, dependencies);
 };
 
+/* get random */
 const getRandomFromInterval = (min, max) => {
   return Math.floor(Math.random() * (max - min + 1) + min);
 };
@@ -20,6 +21,7 @@ const getRandomIdx = (max) => {
   return Math.floor(Math.random() * max);
 };
 
+/* local storage */
 const setStorage = (key, data) => {
   let [[dataKey, dataValue]] = Object.entries(data);
   console.log(111, key, dataKey, dataValue);
@@ -27,7 +29,6 @@ const setStorage = (key, data) => {
   fetchedData[dataKey] = dataValue;
   localStorage.setItem(key, JSON.stringify(fetchedData));
 };
-
 const getStorage = (key) => {
   let data = {};
   try {

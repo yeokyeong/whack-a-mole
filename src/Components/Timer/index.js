@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import "./index.scss";
 import { useUpdateEffect, setStorage, getStorage } from "../../Utils/functions";
+import { SECOND_LIMIT } from "../../Utils/constants";
 
-const Timer = ({ maxSeconds, isPlaying, endGame }) => {
+const Timer = ({ isPlaying, endGame }) => {
   const [seconds, setSeconds] = useState(0);
   const interval = 1000;
 
@@ -37,13 +38,13 @@ const Timer = ({ maxSeconds, isPlaying, endGame }) => {
     setTimeout(() => {
       clearInterval(timerId);
       endGame();
-    }, maxSeconds - seconds);
+    }, SECOND_LIMIT - seconds);
   };
 
   return (
     <span className="item item--timer">
       Timer :
-      <span className="item__strong"> {(maxSeconds - seconds) / 1000}</span>
+      <span className="item__strong"> {(SECOND_LIMIT - seconds) / 1000}</span>
       seconds
     </span>
   );

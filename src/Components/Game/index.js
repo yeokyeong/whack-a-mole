@@ -11,15 +11,15 @@ import {
   getStorage
 } from "../../Utils/functions";
 import {
-  initialMoles,
-  maxMoleCnt,
-  showSeconds,
-  maxSeconds,
-  hideSeconds
+  INITIAL_MOLES,
+  MAX_MOLE_CNT,
+  SECOND_TO_SHOW_INTERVAL,
+  SECOND_LIMIT,
+  SECOND_TO_HIDE
 } from "../../Utils/constants";
 
 function Game() {
-  const [moles, setMoles] = useState(initialMoles);
+  const [moles, setMoles] = useState(INITIAL_MOLES);
   const [activeMoles, setActiveMoles] = useState([]);
   const [isPlaying, setIsPlaying] = useState(false);
   const [score, setScore] = useState(0);
@@ -48,7 +48,7 @@ function Game() {
     if (isPlaying) {
       startMoving();
     } else {
-      setMoles(initialMoles);
+      setMoles(INITIAL_MOLES);
       //FIXME : possibility of error
       setScore(0);
       setStorage("gameData", { score: 0 });
@@ -62,7 +62,7 @@ function Game() {
 
   useUpdateEffect(() => {
     if (isPlaying) {
-      if (activeMoles.length > maxMoleCnt) {
+      if (activeMoles.length > MAX_MOLE_CNT) {
         hideMole(activeMoles[0], 0);
       }
     }
@@ -87,14 +87,17 @@ function Game() {
   /* mole moving  */
   const startMoving = () => {
     console.log(111, "startMoving");
-    let randomSeconds = getRandomFromInterval(showSeconds.min, showSeconds.max);
+    let randomSeconds = getRandomFromInterval(
+      SECOND_TO_SHOW_INTERVAL.MIN,
+      SECOND_TO_SHOW_INTERVAL.MAX
+    );
     let timerId = setInterval(() => {
       showMole(randomSeconds);
     }, randomSeconds);
     let gameData = getStorage("gameData");
     setTimeout(() => {
       clearInterval(timerId);
-    }, maxSeconds - gameData["seconds"]);
+    }, SECOND_LIMIT - gameData["seconds"]);
   };
   const showMole = (seconds) => {
     let randomIdx;
@@ -106,7 +109,7 @@ function Game() {
     setActiveMoles((prev) => {
       return [...prev, randomIdx];
     });
-    hideMole(randomIdx, seconds + hideSeconds);
+    hideMole(randomIdx, seconds + SECOND_TO_HIDE);
   };
   const hideMole = (idx, seconds) => {
     setTimeout(() => {
@@ -130,11 +133,7 @@ function Game() {
       <h2>whack a mole~~!!</h2>
       <div className="game__container">
         <div className="container__header">
-          <Timer
-            maxSeconds={maxSeconds}
-            isPlaying={isPlaying}
-            endGame={endGame}
-          />
+          <Timer isPlaying={isPlaying} endGame={endGame} />
           <Score score={score} />
         </div>
 
