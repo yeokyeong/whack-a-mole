@@ -29,7 +29,6 @@ function Game(props) {
   /* mole moving  */
   const startMoving = () => {
     console.log(111, "startMoving");
-
     let randomSeconds = getRandomFromInterval(minInterval, maxInterval);
     showMole(randomSeconds);
   };
@@ -51,12 +50,30 @@ function Game(props) {
   const getRandomIdx = () => {
     return Math.floor(Math.random() * moles.length);
   };
+
+  const setStorage = (key, value) => {
+    localStorage.setItem(key, value);
+  };
+  const getStorage = (key) => {
+    let data = undefined;
+    try {
+      data = JSON.parse(localStorage.getItem(key));
+    } catch (error) {
+      data = null;
+    }
+    return data;
+  };
   return (
     <div className="component component--game">
       <h2>whack a mole</h2>
       <div className="game__container">
         <div className="container__header">
-          <Timer />
+          <Timer
+            maxSeconds={maxSeconds}
+            isPlaying={isPlaying}
+            setStorage={setStorage}
+            getStorage={getStorage}
+          />
           <Score />
         </div>
 
@@ -83,9 +100,34 @@ const Mole = ({ isActive, idx }) => {
     </div>
   );
 };
-const Timer = () => {
+const Timer = ({ maxSeconds, isPlaying, setStorage, getStorage }) => {
   const [seconds, setSeconds] = useState(0);
-  return <span className="item item--timer"> Timer : {seconds}</span>;
+  const interval = 1000;
+
+  useEffect(() => {
+    setSeconds(getStorage("seconds"));
+    console.log(111, "when timer mount", getStorage("seconds"));
+  }, []);
+
+  useEffect(() => {
+    if (isPlaying) {
+      setTimer();
+    } else {
+    }
+  }, [isPlaying]);
+
+  useEffect(() => {
+    if (seconds > 0) {
+      setStorage("seconds", seconds);
+    }
+  }, [seconds]);
+
+  const setTimer = () => {};
+  return (
+    <span className="item item--timer">
+      Timer : {(maxSeconds - seconds) / 1000} seconds
+    </span>
+  );
 };
 
 const Score = () => {
