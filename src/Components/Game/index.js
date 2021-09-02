@@ -21,6 +21,7 @@ function Game(props) {
 
   const [moles, setMoles] = useState(initialMoles);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [score, setScore] = useState(0);
 
   useEffect(() => {
     let gameData = getStorage();
@@ -34,17 +35,32 @@ function Game(props) {
     } else {
       setIsPlaying(gameData["isPlaying"]);
     }
+    if (!gameData.hasOwnProperty("score")) {
+      setStorage("score", score);
+    } else {
+      setScore(gameData["score"]);
+    }
   }, []);
 
   useUpdateEffect(() => {
-    console.log(111, "I run only if toggle changes.", isPlaying);
     if (isPlaying) {
       startMoving();
     } else {
       setMoles(initialMoles);
+      setScore(0);
+      setStorage("score", 0);
     }
     setStorage("isPlaying", isPlaying);
   }, [isPlaying]);
+
+  useUpdateEffect(() => {
+    setStorage("score", score);
+  }, [score]);
+
+  /* click event */
+  const onClickMole = (idx) => {
+    setScore((prev) => prev + 1);
+  };
 
   /* start & end */
   const startGame = () => {
@@ -109,12 +125,12 @@ function Game(props) {
             getStorage={getStorage}
             endGame={endGame}
           />
-          <Score />
+          <Score score={score} />
         </div>
 
         <div className="container__body">
           {moles.map((isActive, idx) => (
-            <Mole isActive={isActive} idx={idx} />
+            <Mole isActive={isActive} idx={idx} onClickMole={onClickMole} />
           ))}
         </div>
 
@@ -125,9 +141,14 @@ function Game(props) {
     </div>
   );
 }
-const Mole = ({ isActive, idx }) => {
+const Mole = ({ isActive, idx, onClickMole }) => {
   return (
-    <div className="mole-home">
+    <div
+      className="mole-home"
+      onClick={() => {
+        if (isActive) onClickMole(idx);
+      }}
+    >
       <div className="mole">
         <span>{idx},</span>
         <span>{isActive ? "show" : "hide"}</span>
@@ -148,8 +169,13 @@ const Timer = ({ maxSeconds, isPlaying, setStorage, getStorage, endGame }) => {
     }
   }, []);
 
-  useEffect(() => {
-    if (isPlaying) setTimer();
+  useUpdateEffect(() => {
+    if (isPlaying) {
+      setTimer();
+    } else {
+      setSeconds(0);
+      setStorage("seconds", 0);
+    }
   }, [isPlaying]);
 
   useEffect(() => {
@@ -165,8 +191,9 @@ const Timer = ({ maxSeconds, isPlaying, setStorage, getStorage, endGame }) => {
     setTimeout(() => {
       clearInterval(timerId);
       endGame();
-    }, 3000);
+    }, maxSeconds - seconds);
   };
+
   return (
     <span className="item item--timer">
       Timer : {(maxSeconds - seconds) / 1000} seconds
@@ -174,8 +201,7 @@ const Timer = ({ maxSeconds, isPlaying, setStorage, getStorage, endGame }) => {
   );
 };
 
-const Score = () => {
-  const [score, setScore] = useState(0);
+const Score = ({ score }) => {
   return <span className="item item--score"> Score : {score}</span>;
 };
 export default Game;
