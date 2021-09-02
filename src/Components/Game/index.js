@@ -214,7 +214,7 @@ function Game() {
             }}
           >
             {isPlaying
-              ? "you can not stop this until time's gone..😈😈"
+              ? "you cannot stop this game until the time is up..😈😈"
               : "start"}
           </button>
         </div>
@@ -232,10 +232,7 @@ const Mole = ({ isActive, idx, onClickMole }) => {
           onClick={() => {
             if (isActive) onClickMole(idx);
           }}
-        >
-          {/* <span>{idx},</span> */}
-          {/* <span>{isActive ? "show" : "hide"}</span> */}
-        </div>
+        ></div>
       </div>
     </>
   );

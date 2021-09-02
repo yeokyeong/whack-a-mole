@@ -1,4 +1,5 @@
-.component--game {
+.game__container {
+  height: 100%;
 }
 /* header */
 .container__header {
@@ -67,7 +68,7 @@ hr {
   border: none;
   padding: 7px;
   background-color: #a5d6a7;
-  width: 300px;
+  width: 350px;
   height: 40px;
   font-weight: bold;
   margin-bottom: 10px;
