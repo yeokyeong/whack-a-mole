@@ -14,7 +14,7 @@ const Timer = ({ isPlaying, endGame }) => {
   useEffect(() => {
     let gameData = getGameStorage();
     if (!gameData.hasOwnProperty("seconds")) {
-      setGameStorage({ seconds: seconds });
+      setGameStorage({ seconds });
     } else {
       setSeconds(gameData["seconds"]);
     }
@@ -31,7 +31,7 @@ const Timer = ({ isPlaying, endGame }) => {
 
   useEffect(() => {
     if (seconds > 0) {
-      setGameStorage({ seconds: seconds });
+      setGameStorage({ seconds });
     }
   }, [seconds]);
 

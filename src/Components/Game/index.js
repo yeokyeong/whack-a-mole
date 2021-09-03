@@ -32,12 +32,12 @@ function Game() {
     let gameData = getGameStorage();
     //FIXME : Logic Repeated
     if (!gameData.hasOwnProperty("isPlaying")) {
-      setGameStorage({ isPlaying: isPlaying });
+      setGameStorage({ isPlaying });
     } else {
       setIsPlaying(gameData["isPlaying"]);
     }
     if (!gameData.hasOwnProperty("score")) {
-      setGameStorage({ score: score });
+      setGameStorage({ score });
     } else {
       setScore(gameData["score"]);
     }
@@ -52,22 +52,15 @@ function Game() {
     if (isPlaying) {
       startMoving();
     } else {
-      let history = { score, date: new Date().toLocaleString() };
-      //FIXME : how about fix to detect localstorage event?
-      setHistories((prev) => [...prev, history]);
-      setHistoryStorage(history);
-
-      //FIXME : possibility of error
-      setScore(0);
-      setGameStorage({ score: 0 });
-
+      updateHistory();
+      initialScore();
       setMoles(INITIAL_MOLES);
     }
-    setGameStorage({ isPlaying: isPlaying });
+    setGameStorage({ isPlaying });
   }, [isPlaying]);
 
   useUpdateEffect(() => {
-    setGameStorage({ score: score });
+    setGameStorage({ score });
   }, [score]);
 
   useUpdateEffect(() => {
@@ -77,6 +70,17 @@ function Game() {
       }
     }
   }, [activeMoles]);
+
+  const updateHistory = () => {
+    let history = { score, date: new Date().toLocaleString() };
+    setHistories((prev) => [...prev, history]);
+    setHistoryStorage(history);
+  };
+
+  const initialScore = () => {
+    setScore(0);
+    setGameStorage({ score: 0 });
+  };
 
   /* click event */
   const onClickMole = (idx) => {

@@ -2,9 +2,7 @@ import { useEffect, useRef } from "react";
 import { GAME_DATA_KEY, HISTORY_KEY } from "./constants";
 
 const useUpdateEffect = (effect, dependencies = []) => {
-  //FIXME
   const isInitialMount = useRef(true);
-
   useEffect(() => {
     if (isInitialMount.current) {
       isInitialMount.current = false;
