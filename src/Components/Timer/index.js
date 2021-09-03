@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from "react";
 import "./index.scss";
-import { useUpdateEffect, setStorage, getStorage } from "../../Utils/functions";
+import {
+  useUpdateEffect,
+  setGameStorage,
+  getGameStorage
+} from "../../Utils/functions";
 import { SECOND_LIMIT } from "../../Utils/constants";
 
 const Timer = ({ isPlaying, endGame }) => {
@@ -8,9 +12,9 @@ const Timer = ({ isPlaying, endGame }) => {
   const interval = 1000;
 
   useEffect(() => {
-    let gameData = getStorage("gameData");
+    let gameData = getGameStorage();
     if (!gameData.hasOwnProperty("seconds")) {
-      setStorage("gameData", { seconds: seconds });
+      setGameStorage({ seconds: seconds });
     } else {
       setSeconds(gameData["seconds"]);
     }
@@ -21,13 +25,13 @@ const Timer = ({ isPlaying, endGame }) => {
       setTimer();
     } else {
       setSeconds(0);
-      setStorage("gameData", { seconds: 0 });
+      setGameStorage({ seconds: 0 });
     }
   }, [isPlaying]);
 
   useEffect(() => {
     if (seconds > 0) {
-      setStorage("gameData", { seconds: seconds });
+      setGameStorage({ seconds: seconds });
     }
   }, [seconds]);
 

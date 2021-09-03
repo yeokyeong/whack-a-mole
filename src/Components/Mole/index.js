@@ -2,6 +2,22 @@ import React from "react";
 import "./index.scss";
 import { TOTAL_MOLE_CNT } from "../../Utils/constants";
 
+const Mole = ({ isActive, idx, onClickMole }) => {
+  return (
+    <>
+      {breakLines.indexOf(idx) > -1 && <hr />}
+      <div className="mole-home">
+        <div
+          className={`mole mole__${isActive ? "on" : "off"}`}
+          onClick={() => {
+            if (isActive) onClickMole(idx);
+          }}
+        ></div>
+      </div>
+    </>
+  );
+};
+
 const breakLines = getBreakLines(TOTAL_MOLE_CNT);
 function getBreakLines(TOTAL_MOLE_CNT) {
   let k = 2;
@@ -25,21 +41,5 @@ function getBreakLines(TOTAL_MOLE_CNT) {
   }
   return result;
 }
-
-const Mole = ({ isActive, idx, onClickMole }) => {
-  return (
-    <>
-      {breakLines.indexOf(idx) > -1 && <hr />}
-      <div className="mole-home">
-        <div
-          className={`mole mole__${isActive ? "on" : "off"}`}
-          onClick={() => {
-            if (isActive) onClickMole(idx);
-          }}
-        ></div>
-      </div>
-    </>
-  );
-};
 
 export default Mole;
