@@ -3,12 +3,15 @@ import "./index.scss";
 import Timer from "../Timer";
 import Score from "../Score";
 import Mole from "../Mole";
+import History from "../History";
 import {
   useUpdateEffect,
   getRandomFromInterval,
   getRandomIdx,
-  setStorage,
-  getStorage
+  setGameStorage,
+  getGameStorage,
+  setHistoryStorage,
+  getHistoryStorage
 } from "../../Utils/functions";
 import {
   INITIAL_MOLES,
@@ -23,24 +26,25 @@ function Game() {
   const [activeMoles, setActiveMoles] = useState([]);
   const [isPlaying, setIsPlaying] = useState(false);
   const [score, setScore] = useState(0);
+  const [histories, setHistories] = useState([]);
 
   useEffect(() => {
-    let gameData = getStorage("gameData");
+    let gameData = getGameStorage();
     //FIXME : Logic Repeated
-    if (!gameData.hasOwnProperty("moles")) {
-      setStorage("gameData", { moles: moles });
-    } else {
-      setMoles(gameData["moles"]);
-    }
     if (!gameData.hasOwnProperty("isPlaying")) {
-      setStorage("gameData", { isPlaying: isPlaying });
+      setGameStorage({ isPlaying: isPlaying });
     } else {
       setIsPlaying(gameData["isPlaying"]);
     }
     if (!gameData.hasOwnProperty("score")) {
-      setStorage("gameData", { score: score });
+      setGameStorage({ score: score });
     } else {
       setScore(gameData["score"]);
+    }
+
+    let scoreHistories = getHistoryStorage();
+    if (scoreHistories) {
+      setHistories(scoreHistories);
     }
   }, []);
 
@@ -48,16 +52,22 @@ function Game() {
     if (isPlaying) {
       startMoving();
     } else {
-      setMoles(INITIAL_MOLES);
+      let history = { score, date: new Date().toLocaleString() };
+      //FIXME : how about fix to detect localstorage event?
+      setHistories((prev) => [...prev, history]);
+      setHistoryStorage(history);
+
       //FIXME : possibility of error
       setScore(0);
-      setStorage("gameData", { score: 0 });
+      setGameStorage({ score: 0 });
+
+      setMoles(INITIAL_MOLES);
     }
-    setStorage("gameData", { isPlaying: isPlaying });
+    setGameStorage({ isPlaying: isPlaying });
   }, [isPlaying]);
 
   useUpdateEffect(() => {
-    setStorage("gameData", { score: score });
+    setGameStorage({ score: score });
   }, [score]);
 
   useUpdateEffect(() => {
@@ -76,17 +86,14 @@ function Game() {
 
   /* start & end */
   const startGame = () => {
-    console.log(111, "startGame");
     setIsPlaying(true);
   };
   const endGame = () => {
-    console.log(111, "endGame");
     setIsPlaying(false);
   };
 
   /* mole moving  */
   const startMoving = () => {
-    console.log(111, "startMoving");
     let randomSeconds = getRandomFromInterval(
       SECOND_TO_SHOW_INTERVAL.MIN,
       SECOND_TO_SHOW_INTERVAL.MAX
@@ -94,7 +101,7 @@ function Game() {
     let timerId = setInterval(() => {
       showMole(randomSeconds);
     }, randomSeconds);
-    let gameData = getStorage("gameData");
+    let gameData = getGameStorage();
     setTimeout(() => {
       clearInterval(timerId);
     }, SECOND_LIMIT - gameData["seconds"]);
@@ -117,7 +124,6 @@ function Game() {
       setActiveMoles((prev) => {
         return prev.filter((v) => v !== idx);
       });
-      console.log(111, "hideMole");
     }, seconds);
   };
 
@@ -130,7 +136,7 @@ function Game() {
 
   return (
     <div className="component component--game">
-      <h2>whack a mole~~!!</h2>
+      <h2>whack a mole</h2>
       <div className="game__container">
         <div className="container__header">
           <Timer isPlaying={isPlaying} endGame={endGame} />
@@ -159,6 +165,7 @@ function Game() {
               ? "you cannot stop this game until the time is up..😈😈"
               : "start"}
           </button>
+          <History histories={histories} />
         </div>
       </div>
     </div>
