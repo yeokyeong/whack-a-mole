@@ -1,4 +1,46 @@
-.component--game {
-  border: 1px solid red;
+.game__container {
   height: 100%;
+}
+/* header */
+.container__header {
+}
+.item {
+  padding: 7px;
+  background-color: #2e7d32;
+  width: 200px;
+  display: inline-block;
+  color: white;
+  border-radius: 3px;
+}
+
+.item__strong {
+  color: yellow;
+  font-weight: bold;
+  margin-left: 3px;
+  margin-right: 3px;
+  display: inline-block;
+}
+/* body */
+.container__body {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+/* footer */
+.btn {
+  cursor: pointer;
+  border: none;
+  padding: 7px;
+  background-color: #a5d6a7;
+  width: 350px;
+  height: 40px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  border-radius: 3px;
+}
+.btn--off {
+  border: none;
+  cursor: default;
+  background-color: #f44336;
+  color: white;
 }

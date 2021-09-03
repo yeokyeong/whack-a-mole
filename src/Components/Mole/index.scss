@@ -1,0 +1,34 @@
+.mole-home {
+  display: inline-block;
+  padding: 5px;
+  margin: 15px;
+  background-image: url("../../Images/frame.jpg");
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  width: 75px;
+  height: 75px;
+}
+.mole {
+  width: 80%;
+  height: 80%;
+  margin: 5px;
+}
+.mole__on {
+  background-image: url("../../Images/mole.png");
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  cursor: pointer;
+  animation: fadein 0.3s;
+}
+@keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+hr {
+  visibility: hidden;
+}

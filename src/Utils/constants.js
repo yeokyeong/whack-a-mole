@@ -1,0 +1,23 @@
+const SECOND_LIMIT = 60000;
+const SECOND_TO_SHOW_INTERVAL = {
+  MIN: 1000,
+  MAX: 3000
+};
+const SECOND_TO_HIDE = 500;
+const MAX_MOLE_CNT = 5;
+const TOTAL_MOLE_CNT = 24;
+const INITIAL_MOLES = Array(TOTAL_MOLE_CNT).fill(false);
+
+const GAME_DATA_KEY = "gameData";
+const HISTORY_KEY = "histories";
+
+export {
+  SECOND_LIMIT,
+  SECOND_TO_SHOW_INTERVAL,
+  SECOND_TO_HIDE,
+  MAX_MOLE_CNT,
+  TOTAL_MOLE_CNT,
+  INITIAL_MOLES,
+  GAME_DATA_KEY,
+  HISTORY_KEY
+};
